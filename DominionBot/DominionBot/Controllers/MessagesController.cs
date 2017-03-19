@@ -16,16 +16,18 @@ namespace DominionBot
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
-            if (activity.Type == ActivityTypes.Message)
+            if (activity != null)
             {
-                await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
+                if (activity.Type == ActivityTypes.Message)
+                {
+                    await Conversation.SendAsync(activity, () => new Dialogs.RootDialog());
+                }
+                else
+                {
+                    HandleSystemMessage(activity);
+                }
             }
-            else
-            {
-                HandleSystemMessage(activity);
-            }
-            var response = Request.CreateResponse(HttpStatusCode.OK);
-            return response;
+            return new HttpResponseMessage(System.Net.HttpStatusCode.Accepted);
         }
 
         private Activity HandleSystemMessage(Activity message)
